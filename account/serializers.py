@@ -80,6 +80,36 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             print("Password reset token", token)
             link = "http://localhost:3000/user/reset-password"+"/"+str(id)+"/"+token
             print('Password reset link', link)
+            # Send Email
             return attrs
         else:
             raise ValidationErr("You are not a registered user.")
+
+class UserPasswordResetSerializer(serializers.Serializer):
+    password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
+    password2 = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)
+
+    class Meta:
+        fields = ['password','password2']
+
+    def validate(self,attrs):
+        try:
+            password = attrs.get('password')
+            password2 = attrs.get('password2')
+            uid = self.context.get('uid')
+            token = self.context.get('token')
+
+            if password != password2:
+                raise serializers.ValidationError("Password and confirm password doesn't match.")
+
+            # id = smart_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(id=uid)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                raise serializers.ValidationError("Invalid or expired token.")
+            
+            user.set_password(password)
+            user.save()
+            return attrs
+        except DjangoUnicodeDecodeError as identifier:
+            PasswordResetTokenGenerator().check_token(user,token)
+            raise serializers.ValidationError("Invalid or expired token.")
