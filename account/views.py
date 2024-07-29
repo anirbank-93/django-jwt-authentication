@@ -10,6 +10,7 @@ from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
+    UserChangePasswordSerializer
 )
 
 # Renderers
@@ -82,3 +83,10 @@ class UserProfileView(APIView):
         return Response(
             {"data": serializer.data}, status=status.HTTP_200_OK
         )
+    
+class UserChangePasswordView(APIView):
+    renderer_classes = [UserDataRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request,format=None):
+        serializer = UserChangePasswordSerializer(data=request.data)
