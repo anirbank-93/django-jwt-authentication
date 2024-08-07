@@ -7,6 +7,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 # Model
 from .models import User
 
+# Utils
+from .utils import Util
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={"input_type": "password"}, write_only=True)
@@ -81,6 +84,13 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             link = "http://localhost:3000/user/reset-password"+"/"+str(id)+"/"+token
             print('Password reset link', link)
             # Send Email
+            body = 'Click following link to reset your password - '+link
+            data = {
+                'subject': 'Reset Your Password',
+                'body': body,
+                'to_email': user.email,
+            }
+            Util.send_email(data)
             return attrs
         else:
             raise ValidationErr("You are not a registered user.")
