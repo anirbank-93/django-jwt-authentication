@@ -36,16 +36,17 @@ class UserRegistrationView(APIView):
     def post(self, request, format=None):
         serializer = UserRegistrationSerializer(data=request.data)
 
-        if serializer.is_valid(raise_exception=True):
-            print(serializer.validated_data)
-            user = serializer.save()
-            token = get_tokens_for_user(user)
+        # if serializer.is_valid(raise_exception=True):
+        serializer.is_valid(raise_exception=True)
+        # print(serializer.validated_data)
+        user = serializer.save()
+        token = get_tokens_for_user(user)
 
-            return Response(
-                {"msg": "Registration successful!", "tokens": token},
+        return Response(
+            {"msg": "Registration successful!", "tokens": token},
                 status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        )
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(APIView):
@@ -54,26 +55,27 @@ class UserLoginView(APIView):
     def post(self, request, format=None):
         serializer = UserLoginSerializer(data=request.data)
 
-        if serializer.is_valid(raise_exception=True):
-            email = serializer.data.get("email")
-            password = serializer.data.get("password")
-            user = authenticate(email=email, password=password)
+        # if serializer.is_valid(raise_exception=True):
+        serializer.is_valid(raise_exception=True)
 
-            if user is not None:
-                token = get_tokens_for_user(user)
+        email = serializer.data.get("email")
+        password = serializer.data.get("password")
+        user = authenticate(email=email, password=password)
 
-                return Response(
-                    {"msg": "Login successful!", "tokens": token},
+        if user is not None:
+            token = get_tokens_for_user(user)
+
+            return Response(
+                {"msg": "Login successful!", "tokens": token},
                     status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"errors": {"non_field_errors": ["Wrong email or password"]}},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
+            )
+        else:
+            return Response(
+                {"errors": {"non_field_errors": ["Wrong email or password"]}},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         # print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UserProfileView(APIView):
     renderer_classes = [UserDataRenderer]
@@ -93,10 +95,11 @@ class UserChangePasswordView(APIView):
     def post(self,request,format=None):
         serializer = UserChangePasswordSerializer(data=request.data,context={'user':request.user})
 
-        if serializer.is_valid(raise_exception=True):
-            return Response({"msg": "Password changed successfully!"},status=status.HTTP_200_OK)
+        # if serializer.is_valid(raise_exception=True):
+        serializer.is_valid(raise_exception=True)
+        return Response({"msg": "Password changed successfully!"},status=status.HTTP_200_OK)
 
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class SendPasswordResetEmailView(APIView):
     renderer_classes = [UserDataRenderer]
@@ -104,10 +107,11 @@ class SendPasswordResetEmailView(APIView):
     def post(self,request,format=None):
         serializer = SendPasswordResetEmailSerializer(data=request.data)
 
-        if serializer.is_valid(raise_exception=True):
-            return Response({"msg": "Password reset email sent successfully!"},status=status.HTTP_200_OK)
+        # if serializer.is_valid(raise_exception=True):
+        serializer.is_valid(raise_exception=True)
+        return Response({"msg": "Password reset email sent successfully!"},status=status.HTTP_200_OK)
 
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class UserPasswordResetView(APIView):
     renderer_classes = [UserDataRenderer]
@@ -115,7 +119,8 @@ class UserPasswordResetView(APIView):
     def post(self,request,uid,token,format=None):
         serializer = UserPasswordResetSerializer(data=request.data,context={'uid':uid,'token':token})
 
-        if serializer.is_valid(raise_exception=True):
-            return Response({"msg": "Password reset successfully!"},status=status.HTTP_200_OK)
+        # if serializer.is_valid(raise_exception=True):
+        serializer.is_valid(raise_exception=True)
+        return Response({"msg": "Password reset successfully!"},status=status.HTTP_200_OK)
         
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
