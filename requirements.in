@@ -1,0 +1,9 @@
+backports.tarfile
+djangorestframework
+importlib-metadata
+importlib-resources
+jaraco.text
+pip-chill
+pip-tools
+platformdirs
+tomli
